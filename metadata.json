@@ -1,0 +1,7 @@
+{
+  "name": "Forensix AI",
+  "description": "A high-intelligence digital forensics and OSINT assistant designed for ethical cyber investigations. Features image intelligence, network mapping, and secure conversation analysis.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
