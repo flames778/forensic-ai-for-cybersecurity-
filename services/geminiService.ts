@@ -1,61 +1,41 @@
 
-const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:3005/api' : '/api';
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3005' : '';
+
+const postApi = async (action: string, body: any) => {
+  const url = API_URL ? `${API_URL}/api` : '/api';
+  const response = await fetch(`${url}?action=${action}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...body, action })
+  });
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
 
 export const chatWithForensix = async (
   message: string,
   history: { role: 'user' | 'model', parts: { text: string }[] }[] = [],
   moduleContext?: string
 ) => {
-  const response = await fetch(`${BACKEND_URL}/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, history, moduleContext })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('chat', { message, history, moduleContext });
 };
 
 export const accessRemoteCamera = async (target: string, method: string, description: string) => {
-  const response = await fetch(`${BACKEND_URL}/access-remote-camera`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ target, method, description })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('access-remote-camera', { target, method, description });
 };
 
 export const simulatePentest = async (target: string, goal: string, toolset: any) => {
-  const response = await fetch(`${BACKEND_URL}/simulate-pentest`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ target, goal, toolset })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  const data = await response.json();
+  const data = await postApi('simulate-pentest', { target, goal, toolset });
   return data.text;
 };
 
 export const scanVulnerabilities = async (target: string, config: any) => {
-  const response = await fetch(`${BACKEND_URL}/scan-vulnerabilities`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ target, config })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  const data = await response.json();
+  const data = await postApi('scan-vulnerabilities', { target, config });
   return data.text;
 };
 
-// Generic investigator for all other tools
 const genericInvestigation = async (tool: string, params: any, prompt?: string) => {
-  const response = await fetch(`${BACKEND_URL}/perform-investigation`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tool, params, prompt })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  const data = await response.json();
+  const data = await postApi('perform-investigation', { tool, params, prompt });
   return data.text;
 };
 
@@ -99,13 +79,7 @@ export const performDeviceForensics = (target: string, type: string) =>
   genericInvestigation('Device Forensics', { target, type }, `Device forensics for Evans: ${target}, Type: ${type}.`);
 
 export const performOsintTrace = async (query: string) => {
-  const response = await fetch(`${BACKEND_URL}/osint-trace`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('osint-trace', { query });
 };
 
 export const analyzeForensicLogs = (logContent: string) =>
@@ -119,100 +93,45 @@ export const analyzeForensicImage = async (base64Data: string, prompt: string) =
 };
 
 export const getNetworkInsights = async (rawLogs: string) => {
-  const response = await fetch(`${BACKEND_URL}/get-network-insights`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rawLogs })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('get-network-insights', { rawLogs });
 };
 
-// Open Source Tools API
 export const getToolsList = async () => {
-  const response = await fetch(`${BACKEND_URL}/tools`);
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return { categories: ['osint', 'network', 'web', 'wifi', 'password', 'pentest', 'vuln', 'memory', 'disk', 'reverse', 'cloud', 'malware', 'fuzz', 'honeypot', 'social', 'stealth', 'threat', 'packet'] };
 };
 
 export const searchTools = async (query: string) => {
-  const response = await fetch(`${BACKEND_URL}/tools/search?query=${encodeURIComponent(query)}`);
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('tools-run', { tool: 'search', params: { query } });
 };
 
 export const getToolsByCategory = async (categoryId: string) => {
-  const response = await fetch(`${BACKEND_URL}/tools/category/${categoryId}`);
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('tools-run', { tool: 'category', params: { categoryId } });
 };
 
 export const runTool = async (tool: string, target?: string, params?: any) => {
-  const response = await fetch(`${BACKEND_URL}/tools/run`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tool, target, params })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('tools-run', { tool, target, params });
 };
 
 export const threatIntelLookup = async (ioc: string, type?: string) => {
-  const response = await fetch(`${BACKEND_URL}/threat-intel`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ioc, type })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('threat-intel', { ioc, type });
 };
 
 export const analyzePacketCapture = async (captureData: string, filter?: string) => {
-  const response = await fetch(`${BACKEND_URL}/packet-analysis`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ captureData, filter })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('packet-analysis', { captureData, filter });
 };
 
 export const correlateVulnerabilities = async (cveIds: string, target: string) => {
-  const response = await fetch(`${BACKEND_URL}/vulnerability-correlation`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cveIds, target })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('vulnerability-correlation', { cveIds, target });
 };
 
 export const analyzeWithYara = async (sampleHash: string, rules?: string) => {
-  const response = await fetch(`${BACKEND_URL}/malware-yara`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sampleHash, rules })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('malware-yara', { sampleHash, rules });
 };
 
 export const analyzeWithVolatility = async (dumpPath: string, plugin?: string) => {
-  const response = await fetch(`${BACKEND_URL}/memory-volatility`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ dumpPath, plugin })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('memory-volatility', { dumpPath, plugin });
 };
 
 export const analyzeWithSleuthKit = async (imagePath: string, command?: string) => {
-  const response = await fetch(`${BACKEND_URL}/disk-sleuthkit`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ imagePath, command })
-  });
-  if (!response.ok) throw new Error('Backend link failed');
-  return response.json();
+  return postApi('disk-sleuthkit', { imagePath, command });
 };
