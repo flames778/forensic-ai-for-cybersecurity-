@@ -1,5 +1,5 @@
 
-const BACKEND_URL = 'http://localhost:3005/api';
+const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:3005/api' : '/api';
 
 export const chatWithForensix = async (
   message: string,
