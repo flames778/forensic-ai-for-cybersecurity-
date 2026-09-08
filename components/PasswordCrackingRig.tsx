@@ -4,6 +4,7 @@ import { Key, ShieldAlert, Loader2, Terminal, Lock, Unlock, Database, Activity, 
 import { simulatePasswordCrack } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const PasswordCrackingRig: React.FC = () => {
   const [hash, setHash] = useState('');
@@ -81,24 +82,18 @@ const PasswordCrackingRig: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Cracking Arsenal</h3>
-            <div className="space-y-2">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'password')?.tools.map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
-                  <span className="text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-400">READY</span>
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-400 transition-colors">
-                        <ExternalLink size={8} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Password Tools — Real Execution"
+            color="purple"
+            tools={[
+              { id: 'hashcat', name: 'Hashcat', github: 'hashcat/hashcat' },
+              { id: 'john', name: 'John the Ripper', github: 'openwall/john' },
+              { id: 'hydra', name: 'Hydra', github: 'vanhauser-thc/thc-hydra' },
+              { id: 'medusa', name: 'Medusa', github: 'jmk-foofus/medusa' },
+              { id: 'crunch', name: 'Crunch' },
+              { id: 'cewl', name: 'CeWL', github: 'digininja/CeWL' },
+            ]}
+          />
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col min-h-[450px] overflow-hidden shadow-2xl">

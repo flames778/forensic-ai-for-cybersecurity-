@@ -4,6 +4,7 @@ import { Code2, ShieldAlert, Loader2, Cpu, Terminal, Binary, FileCode, CheckCirc
 import { simulateReverseEng } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const ReverseEngLab: React.FC = () => {
   const [code, setCode] = useState('');
@@ -106,24 +107,20 @@ const ReverseEngLab: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Reverse Engineering Toolkit</h3>
-            <div className="space-y-2">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'reverse')?.tools.slice(0, 6).map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono border-b border-zinc-800 pb-2">
-                  <span className="text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-blue-400">LOADED</span>
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-blue-400 transition-colors">
-                        <ExternalLink size={10} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Reverse Engineering — Real Execution"
+            color="blue"
+            tools={[
+              { id: 'r2', name: 'Radare2', github: 'radareorg/radare2' },
+              { id: 'readelf', name: 'readelf' },
+              { id: 'objdump', name: 'objdump' },
+              { id: 'ROPgadget', name: 'ROPgadget', github: 'JonathanSalwan/ROPgadget' },
+              { id: 'gdb', name: 'GDB' },
+              { id: 'file', name: 'file' },
+              { id: 'strings', name: 'strings' },
+              { id: 'nm', name: 'nm' },
+            ]}
+          />
         </div>
       </div>
     </div>

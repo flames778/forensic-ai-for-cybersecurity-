@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
-import { Terminal, Download, Maximize2, RefreshCcw, Share2, ZoomIn, ExternalLink } from 'lucide-react';
+import { Terminal, Download, Maximize2, RefreshCcw, Share2, ZoomIn, ExternalLink, Play, CheckCircle, XCircle } from 'lucide-react';
 import { getNetworkInsights } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
+import { runRealTool, checkToolsAvailability } from '../services/realToolsService';
+import ToolRunner from './ToolRunner';
 
 const NetworkMapper: React.FC = () => {
   const [data, setData] = useState<{ nodes: any[], links: any[] }>({
@@ -21,6 +23,35 @@ const NetworkMapper: React.FC = () => {
   });
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [toolOutput, setToolOutput] = useState<string>('');
+  const [toolStatus, setToolStatus] = useState<Record<string, boolean>>({});
+  const [toolTarget, setToolTarget] = useState('');
+  const [runningTool, setRunningTool] = useState<string | null>(null);
+
+  const loadToolStatus = async () => {
+    try {
+      const status = await checkToolsAvailability();
+      setToolStatus(status);
+    } catch (err) {
+      console.error('Failed to check tools:', err);
+    }
+  };
+
+  React.useEffect(() => { loadToolStatus(); }, []);
+
+  const executeTool = async (tool: string, options?: any) => {
+    if (!toolTarget) { setToolOutput('Error: Enter a target IP or hostname first'); return; }
+    setRunningTool(tool);
+    setToolOutput(`Executing ${tool} against ${toolTarget}...\n`);
+    try {
+      const result = await runRealTool(tool, toolTarget, options);
+      setToolOutput(`[${tool.toUpperCase()}] Command: ${result.command}\nStatus: ${result.status}\nDuration: ${result.duration}ms\n\n${result.output}${result.stderr ? '\n\nSTDERR:\n' + result.stderr : ''}`);
+    } catch (err: any) {
+      setToolOutput(`Error: ${err.message}`);
+    } finally {
+      setRunningTool(null);
+    }
+  };
 
   const processData = async () => {
     if (!input.trim()) return;
@@ -82,26 +113,19 @@ const NetworkMapper: React.FC = () => {
             </button>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Network Arsenal</h3>
-            <div className="space-y-2">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'network')?.tools.slice(0, 6).map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono">
-                  <span className="text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    {tool.command && (
-                      <button className="text-[8px] text-zinc-700 hover:text-emerald-400 transition-colors">COPY</button>
-                    )}
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-emerald-400 transition-colors">
-                        <ExternalLink size={8} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Network Tools — Real Execution"
+            color="emerald"
+            tools={[
+              { id: 'nmap', name: 'Nmap', github: 'nmap/nmap' },
+              { id: 'masscan', name: 'Masscan', github: 'robertdavidgraham/masscan' },
+              { id: 'tcpdump', name: 'Tcpdump' },
+              { id: 'nc', name: 'Netcat' },
+              { id: 'zmap', name: 'Zmap', github: 'zmap/zmap' },
+              { id: 'hping3', name: 'Hping3' },
+              { id: 'ncat', name: 'Ncat' },
+            ]}
+          />
         </div>
 
         {/* Graph Panel */}

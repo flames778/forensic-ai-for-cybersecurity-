@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Calendar, ShieldAlert, Loader2, Activity, Terminal, Search, Clock, List } from 'lucide-react';
 import { generateTimeline } from '../services/geminiService';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const ForensicTimeline: React.FC = () => {
   const [logs, setLogs] = useState('');
@@ -56,6 +57,16 @@ const ForensicTimeline: React.FC = () => {
               </button>
             </div>
           </div>
+
+          <ToolRunner
+            categoryLabel="Forensic Tools — Real Execution"
+            color="zinc"
+            tools={[
+              { id: 'fls', name: 'fls (Sleuth Kit)' },
+              { id: 'volatility', name: 'Volatility 3' },
+              { id: 'whois', name: 'Whois' },
+            ]}
+          />
         </div>
 
         <div className="lg:col-span-8 bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col min-h-[500px] overflow-hidden shadow-2xl relative">

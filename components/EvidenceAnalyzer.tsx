@@ -4,6 +4,7 @@ import { FileText, AlertTriangle, FileSearch, CheckCircle2, Loader2, Upload, Mes
 import { analyzeForensicLogs } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const EvidenceAnalyzer: React.FC = () => {
   const [content, setContent] = useState('');
@@ -78,27 +79,18 @@ const EvidenceAnalyzer: React.FC = () => {
 
         {/* Insights Sidebar */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <ShieldCheck className="text-green-500" size={18} />
-              Intelligence Tools
-            </h3>
-            <div className="space-y-4">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'threat')?.tools.slice(0, 4).map(tool => (
-                <div key={tool.name} className="flex items-center justify-between p-3 bg-black/40 rounded-xl border border-zinc-800">
-                  <span className="text-xs text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-green-500">ACTIVE</span>
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-green-400 transition-colors">
-                        <ExternalLink size={10} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Evidence Analysis — Real Execution"
+            color="blue"
+            tools={[
+              { id: 'strings', name: 'strings' },
+              { id: 'file', name: 'file' },
+              { id: 'readelf', name: 'readelf' },
+              { id: 'yara', name: 'YARA' },
+              { id: 'clamscan', name: 'ClamAV' },
+              { id: 'floss', name: 'FLOSS' },
+            ]}
+          />
 
           <div className="bg-amber-900/10 border border-amber-900/30 rounded-3xl p-6">
             <h3 className="text-sm font-bold text-amber-500 mb-2 flex items-center gap-2">

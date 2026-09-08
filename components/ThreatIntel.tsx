@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Radar, ShieldAlert, Loader2, Search, Globe, Activity, AlertTriangle, ExternalLink, Database, RefreshCw } from 'lucide-react';
 import { performOsintTrace } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
+import ToolRunner from './ToolRunner';
 import QuickReply from './QuickReply';
 
 interface ThreatEntry {
@@ -160,21 +161,16 @@ const ThreatIntel: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Open Source Tools</h3>
-            <div className="space-y-2">
-              {threatTools?.tools.slice(0, 5).map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
-                  <span className="text-zinc-400">{tool.name}</span>
-                  {tool.github && (
-                    <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300">
-                      <ExternalLink size={10} />
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Threat Intel — Real Execution"
+            color="cyan"
+            tools={[
+              { id: 'whois', name: 'Whois' },
+              { id: 'dig', name: 'Dig' },
+              { id: 'nslookup', name: 'Nslookup' },
+              { id: 'nmap', name: 'Nmap (port scan)' },
+            ]}
+          />
         </div>
 
         {/* Threat Feed */}

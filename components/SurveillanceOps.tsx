@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Video, ShieldAlert, Loader2, Zap, Terminal, Activity, Target, Radio, CameraOff, Monitor, ScanLine, Eye } from 'lucide-react';
 import { accessRemoteCamera } from '../services/geminiService';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const SurveillanceOps: React.FC = () => {
   const [target, setTarget] = useState('');
@@ -117,6 +118,18 @@ const SurveillanceOps: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <ToolRunner
+            categoryLabel="Surveillance Tools — Real Execution"
+            color="red"
+            tools={[
+              { id: 'nmap', name: 'Nmap' },
+              { id: 'masscan', name: 'Masscan' },
+              { id: 'whois', name: 'Whois' },
+              { id: 'dig', name: 'Dig' },
+              { id: 'bettercap', name: 'Bettercap' },
+            ]}
+          />
         </div>
 
         {/* Live Feed / Results Hub */}

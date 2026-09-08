@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { EyeOff, ShieldCheck, Loader2, ShieldAlert, Zap, Globe, Lock, Terminal, Ghost, Trash2, ExternalLink } from 'lucide-react';
 import { performStealthAudit, scrubMetadata } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
+import ToolRunner from './ToolRunner';
 import QuickReply from './QuickReply';
 
 const StealthToolkit: React.FC = () => {
@@ -167,29 +168,17 @@ const StealthToolkit: React.FC = () => {
             )}
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">OPSEC Toolkit</h3>
-            <div className="space-y-2">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'stealth')?.tools.map(tool => (
-                <div key={tool.name} className="p-4 bg-zinc-800/20 border border-zinc-800 rounded-2xl flex gap-4 items-start">
-                  <div className="p-2 bg-zinc-700/50 rounded-lg h-fit">
-                    <Lock size={16} className="text-zinc-400" />
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-[10px] font-bold text-white uppercase">{tool.name}</p>
-                      {tool.github && (
-                        <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-400 transition-colors">
-                          <ExternalLink size={10} />
-                        </a>
-                      )}
-                    </div>
-                    <p className="text-[10px] text-zinc-500 italic">{tool.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="OPSEC & Anonymity — Real Execution"
+            color="zinc"
+            tools={[
+              { id: 'macchanger', name: 'MACChanger', github: 'alobbs/macchanger' },
+              { id: 'proxychains', name: 'Proxychains' },
+              { id: 'steghide', name: 'Steghide' },
+              { id: 'gpg', name: 'GPG' },
+              { id: 'tor', name: 'Tor', github: 'torproject/tor' },
+            ]}
+          />
         </div>
       </div>
       

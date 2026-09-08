@@ -4,6 +4,7 @@ import { Cpu, ShieldAlert, Loader2, Activity, Terminal, Search, Zap, ListFilter,
 import { analyzeMemoryDump } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const MemoryAnalyzer: React.FC = () => {
   const [dumpInfo, setDumpInfo] = useState('');
@@ -58,24 +59,14 @@ const MemoryAnalyzer: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Memory Forensics Tools</h3>
-            <div className="space-y-2">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'memory')?.tools.map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg">
-                  <span className="text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-indigo-400">LOADED</span>
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-indigo-400 transition-colors">
-                        <ExternalLink size={8} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Memory Forensics — Real Execution"
+            color="indigo"
+            tools={[
+              { id: 'volatility', name: 'Volatility 3', github: 'volatilityfoundation/volatility3' },
+              { id: 'memprocfs', name: 'MemProcFS', github: 'ufrisk/MemProcFS' },
+            ]}
+          />
         </div>
 
         <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col min-h-[500px] overflow-hidden shadow-2xl relative">

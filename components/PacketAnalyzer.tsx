@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Radio, ShieldAlert, Loader2, Terminal, Download, Filter, Search, Activity, Pause, Play } from 'lucide-react';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
+import ToolRunner from './ToolRunner';
 
 interface PacketEntry {
   no: number;
@@ -166,21 +167,15 @@ const PacketAnalyzer: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Analysis Tools</h3>
-            <div className="space-y-2">
-              {packetTools?.tools.slice(0, 6).map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
-                  <span className="text-zinc-400">{tool.name}</span>
-                  {tool.command && (
-                    <button className="text-emerald-400 hover:text-emerald-300 text-[8px]">
-                      COPY
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Packet Analysis — Real Execution"
+            color="green"
+            tools={[
+              { id: 'tshark', name: 'tshark' },
+              { id: 'tcpdump', name: 'tcpdump' },
+              { id: 'ngrep', name: 'ngrep' },
+            ]}
+          />
         </div>
 
         {/* Packet List */}

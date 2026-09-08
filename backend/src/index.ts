@@ -5,6 +5,28 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import {
+  runNmap, runMasscan, runTcpdump, runNetcat, runNuclei, runNikto, runSqlmap,
+  runAircrackNg, runHashcat, runJohn, runHydra, runVolatility, runFls, runForemost,
+  runRadare2, runReadelf, runObjdump, runYara, runClamav, runWhois, runDig, runNslookup,
+  runMacchanger, checkAllTools, checkToolAvailable, runGenericTool,
+  runTheHarvester, runAmass, runSubfinder, runShodanSearch, runPhoton,
+  runGobuster, runDirb, runFfuf, runWfuzz, runWhatweb, runWafw0f, runWpscan, runXsser,
+  runAircrackNg as runAircrackNg2, runBettercap, runMedusa, runCrunch, runCewl,
+  runMetasploit, runCrackMapExec, runBloodhound,
+  runWapiti, runRetireJs, runOpenvas,
+  runVolatilityNetscan, runVolatilityMalware,
+  runScalpel, runTestDisk, runBulkExtractor, runIstat, runFsstat, runMmls,
+  runRopgadget, runGdb, runFileMagic, runStrings, runNm, runLtrace,
+  runFloss, runCapa,
+  runAflFuzz, runRadamsa,
+  runCowrie, runConpot, runOpenCanary, runHoneyPy,
+  runSET, runGoPhish, runZphisher,
+  runProxychains, runSteghide, runGpgEncrypt, runTorCheck,
+  runMispSearch, runOpenCti, runAbuseIpdb, runGreyNoise,
+  runTshark, runNgrep, runDumpcap,
+  runZmap, runHping3, runNcat
+} from './tools.js';
 
 dotenv.config();
 
@@ -253,6 +275,196 @@ app.post('/api/disk-sleuthkit', async (req: Request, res: Response) => {
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
+});
+
+// ============ REAL TOOL EXECUTION ROUTES ============
+
+app.get('/api/tools/check', async (req: Request, res: Response) => {
+    const tools = await checkAllTools();
+    res.json(tools);
+});
+
+app.get('/api/tools/check/:tool', async (req: Request, res: Response) => {
+    const available = await checkToolAvailable(req.params.tool);
+    res.json({ tool: req.params.tool, installed: available });
+});
+
+// Network
+app.post('/api/tools/nmap', async (req: Request, res: Response) => {
+    const { target, options } = req.body;
+    if (!target) return res.status(400).json({ error: 'target is required' });
+    const result = await runNmap(target, options || '-sV -sC');
+    res.json(result);
+});
+
+app.post('/api/tools/masscan', async (req: Request, res: Response) => {
+    const { target, ports } = req.body;
+    if (!target) return res.status(400).json({ error: 'target is required' });
+    const result = await runMasscan(target, ports || '0-65535');
+    res.json(result);
+});
+
+app.post('/api/tools/tcpdump', async (req: Request, res: Response) => {
+    const { iface, count } = req.body;
+    const result = await runTcpdump(iface || 'any', count || 100);
+    res.json(result);
+});
+
+app.post('/api/tools/nc', async (req: Request, res: Response) => {
+    const { target, ports } = req.body;
+    if (!target) return res.status(400).json({ error: 'target is required' });
+    const result = await runNetcat(target, ports || '1-1000');
+    res.json(result);
+});
+
+// Vulnerability
+app.post('/api/tools/nuclei', async (req: Request, res: Response) => {
+    const { target, templates } = req.body;
+    if (!target) return res.status(400).json({ error: 'target is required' });
+    const result = await runNuclei(target, templates || 'cves');
+    res.json(result);
+});
+
+app.post('/api/tools/nikto', async (req: Request, res: Response) => {
+    const { target } = req.body;
+    if (!target) return res.status(400).json({ error: 'target is required' });
+    const result = await runNikto(target);
+    res.json(result);
+});
+
+app.post('/api/tools/sqlmap', async (req: Request, res: Response) => {
+    const { url } = req.body;
+    if (!url) return res.status(400).json({ error: 'url is required' });
+    const result = await runSqlmap(url);
+    res.json(result);
+});
+
+// WiFi
+app.post('/api/tools/aircrack-ng', async (req: Request, res: Response) => {
+    const { captureFile, wordlist } = req.body;
+    if (!captureFile) return res.status(400).json({ error: 'captureFile is required' });
+    const result = await runAircrackNg(captureFile, wordlist);
+    res.json(result);
+});
+
+// Password
+app.post('/api/tools/hashcat', async (req: Request, res: Response) => {
+    const { hashFile, mode, wordlist } = req.body;
+    if (!hashFile) return res.status(400).json({ error: 'hashFile is required' });
+    const result = await runHashcat(hashFile, mode || 0, wordlist);
+    res.json(result);
+});
+
+app.post('/api/tools/john', async (req: Request, res: Response) => {
+    const { hashFile, wordlist } = req.body;
+    if (!hashFile) return res.status(400).json({ error: 'hashFile is required' });
+    const result = await runJohn(hashFile, wordlist);
+    res.json(result);
+});
+
+app.post('/api/tools/hydra', async (req: Request, res: Response) => {
+    const { target, username, service, wordlist } = req.body;
+    if (!target || !username) return res.status(400).json({ error: 'target and username are required' });
+    const result = await runHydra(target, username, service || 'ssh', wordlist);
+    res.json(result);
+});
+
+// Memory
+app.post('/api/tools/volatility', async (req: Request, res: Response) => {
+    const { dumpPath, plugin } = req.body;
+    if (!dumpPath) return res.status(400).json({ error: 'dumpPath is required' });
+    const result = await runVolatility(dumpPath, plugin);
+    res.json(result);
+});
+
+// Disk
+app.post('/api/tools/fls', async (req: Request, res: Response) => {
+    const { imagePath, offset } = req.body;
+    if (!imagePath) return res.status(400).json({ error: 'imagePath is required' });
+    const result = await runFls(imagePath, offset || 0);
+    res.json(result);
+});
+
+app.post('/api/tools/foremost', async (req: Request, res: Response) => {
+    const { imagePath, outputDir } = req.body;
+    if (!imagePath) return res.status(400).json({ error: 'imagePath is required' });
+    const result = await runForemost(imagePath, outputDir);
+    res.json(result);
+});
+
+// Reverse Engineering
+app.post('/api/tools/radare2', async (req: Request, res: Response) => {
+    const { binaryPath } = req.body;
+    if (!binaryPath) return res.status(400).json({ error: 'binaryPath is required' });
+    const result = await runRadare2(binaryPath);
+    res.json(result);
+});
+
+app.post('/api/tools/readelf', async (req: Request, res: Response) => {
+    const { binaryPath } = req.body;
+    if (!binaryPath) return res.status(400).json({ error: 'binaryPath is required' });
+    const result = await runReadelf(binaryPath);
+    res.json(result);
+});
+
+app.post('/api/tools/objdump', async (req: Request, res: Response) => {
+    const { binaryPath } = req.body;
+    if (!binaryPath) return res.status(400).json({ error: 'binaryPath is required' });
+    const result = await runObjdump(binaryPath);
+    res.json(result);
+});
+
+// Malware
+app.post('/api/tools/yara', async (req: Request, res: Response) => {
+    const { filePath, rulesDir } = req.body;
+    if (!filePath) return res.status(400).json({ error: 'filePath is required' });
+    const result = await runYara(filePath, rulesDir);
+    res.json(result);
+});
+
+app.post('/api/tools/clamscan', async (req: Request, res: Response) => {
+    const { filePath } = req.body;
+    if (!filePath) return res.status(400).json({ error: 'filePath is required' });
+    const result = await runClamav(filePath);
+    res.json(result);
+});
+
+// OSINT
+app.post('/api/tools/whois', async (req: Request, res: Response) => {
+    const { target } = req.body;
+    if (!target) return res.status(400).json({ error: 'target is required' });
+    const result = await runWhois(target);
+    res.json(result);
+});
+
+app.post('/api/tools/dig', async (req: Request, res: Response) => {
+    const { target, recordType } = req.body;
+    if (!target) return res.status(400).json({ error: 'target is required' });
+    const result = await runDig(target, recordType || 'ANY');
+    res.json(result);
+});
+
+app.post('/api/tools/nslookup', async (req: Request, res: Response) => {
+    const { target } = req.body;
+    if (!target) return res.status(400).json({ error: 'target is required' });
+    const result = await runNslookup(target);
+    res.json(result);
+});
+
+// Stealth
+app.post('/api/tools/macchanger', async (req: Request, res: Response) => {
+    const { iface } = req.body;
+    if (!iface) return res.status(400).json({ error: 'iface is required' });
+    const result = await runMacchanger(iface);
+    res.json(result);
+});
+
+// Generic tool runner - supports ALL 130+ tools
+app.post('/api/tools/run-real', async (req: Request, res: Response) => {
+    const { tool, target, params } = req.body;
+    if (!tool) return res.status(400).json({ error: 'tool name is required' });
+    const result = await runGenericTool(tool, target || '', params || {});
+    res.json(result);
 });
 
 app.listen(port, () => {

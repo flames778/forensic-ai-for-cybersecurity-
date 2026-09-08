@@ -4,6 +4,7 @@ import { UserCheck, ShieldAlert, Loader2, Brain, MessageCircle, AlertCircle, Fil
 import { simulateSocialEng } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const SocialEngLab: React.FC = () => {
   const [scenario, setScenario] = useState('');
@@ -58,24 +59,15 @@ const SocialEngLab: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Social Engineering Toolkit</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'social')?.tools.map(tool => (
-                <div key={tool.name} className={`p-3 rounded-xl border flex items-center gap-2 bg-amber-600/10 border-amber-600/30`}>
-                  <AlertCircle size={14} className="text-amber-400" />
-                  <div className="flex-1">
-                    <span className="text-[10px] font-bold text-amber-400 uppercase">{tool.name}</span>
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="ml-2 text-amber-600 hover:text-amber-300 transition-colors">
-                        <ExternalLink size={8} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Social Engineering — Real Execution"
+            color="orange"
+            tools={[
+              { id: 'set', name: 'SET', github: 'trustedsec/social-engineer-toolkit' },
+              { id: 'gophish', name: 'GoPhish', github: 'gophish/gophish' },
+              { id: 'zphisher', name: 'Zphisher', github: 'htr-tech/zphisher' },
+            ]}
+          />
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col min-h-[500px] overflow-hidden shadow-2xl">

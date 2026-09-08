@@ -4,6 +4,7 @@ import { Wifi, ShieldAlert, Zap, Loader2, Signal, Terminal, Lock, Unlock, Extern
 import { simulateWifiCrack } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const WifiCracker: React.FC = () => {
   const [ssid, setSsid] = useState('');
@@ -69,26 +70,14 @@ const WifiCracker: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">WiFi Attack Suite</h3>
-            <div className="space-y-2">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'wifi')?.tools.map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono">
-                  <span className="text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    {tool.command && (
-                      <button className="text-[8px] text-zinc-700 hover:text-red-400 transition-colors">COPY</button>
-                    )}
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-red-400 transition-colors">
-                        <ExternalLink size={8} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="WiFi Tools — Real Execution"
+            color="red"
+            tools={[
+              { id: 'aircrack-ng', name: 'Aircrack-ng', github: 'aircrack-ng/aircrack-ng' },
+              { id: 'bettercap', name: 'Bettercap', github: 'bettercap/bettercap' },
+            ]}
+          />
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col min-h-[400px] overflow-hidden shadow-xl">

@@ -4,6 +4,7 @@ import { Smartphone, Laptop, Loader2, Cpu, ShieldAlert, Terminal, Lock, Unlock, 
 import { performDeviceForensics } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const DeviceForensics: React.FC = () => {
   const [target, setTarget] = useState('');
@@ -94,24 +95,18 @@ const DeviceForensics: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Recon Tools</h3>
-            <div className="space-y-3">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'osint')?.tools.slice(0, 4).map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
-                  <span className="text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-purple-400">READY</span>
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-purple-400 transition-colors">
-                        <ExternalLink size={8} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Device Forensics — Real Execution"
+            color="indigo"
+            tools={[
+              { id: 'fls', name: 'fls (Sleuth Kit)' },
+              { id: 'foremost', name: 'Foremost' },
+              { id: 'scalpel', name: 'Scalpel' },
+              { id: 'volatility', name: 'Volatility 3' },
+              { id: 'strings', name: 'strings' },
+              { id: 'file', name: 'file' },
+            ]}
+          />
         </div>
 
         {/* Results Hub */}

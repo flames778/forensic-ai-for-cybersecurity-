@@ -4,6 +4,7 @@ import { HardDrive, ShieldAlert, Loader2, Database, Hash, Archive, Terminal, Sea
 import { performDiskImaging } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const DiskImager: React.FC = () => {
   const [source, setSource] = useState('');
@@ -74,26 +75,20 @@ const DiskImager: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Disk Forensics Toolkit</h3>
-            <div className="space-y-2">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'disk')?.tools.map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
-                  <span className="text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    {tool.command && (
-                      <span className="text-zinc-700 text-[8px]">{tool.command.split(' ')[0]}</span>
-                    )}
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-emerald-400 transition-colors">
-                        <ExternalLink size={8} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Disk Forensics — Real Execution"
+            color="zinc"
+            tools={[
+              { id: 'fls', name: 'The Sleuth Kit (fls)', github: 'sleuthkit/sleuthkit' },
+              { id: 'foremost', name: 'Foremost' },
+              { id: 'scalpel', name: 'Scalpel', github: 'sleuthkit/scalpel' },
+              { id: 'testdisk', name: 'TestDisk', github: 'cgsecurity/testdisk' },
+              { id: 'bulk_extractor', name: 'Bulk Extractor', github: 'simson/bulk_extractor' },
+              { id: 'istat', name: 'istat (Sleuth Kit)' },
+              { id: 'fsstat', name: 'fsstat (Sleuth Kit)' },
+              { id: 'mmls', name: 'mmls (Sleuth Kit)' },
+            ]}
+          />
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col min-h-[500px] overflow-hidden shadow-2xl">

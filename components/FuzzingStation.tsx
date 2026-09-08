@@ -4,6 +4,7 @@ import { Zap, ShieldAlert, Loader2, Search, Target, Terminal, Activity, Bug, Ext
 import { runFuzzingSession } from '../services/geminiService';
 import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
+import ToolRunner from './ToolRunner';
 
 const FuzzingStation: React.FC = () => {
   const [target, setTarget] = useState('');
@@ -73,26 +74,14 @@ const FuzzingStation: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Fuzzing Arsenal</h3>
-            <div className="space-y-2">
-              {OPEN_SOURCE_TOOLS.find(c => c.id === 'fuzz')?.tools.map(tool => (
-                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
-                  <span className="text-zinc-500">{tool.name}</span>
-                  <div className="flex items-center gap-2">
-                    {tool.command && (
-                      <span className="text-zinc-700 text-[8px]">{tool.command.split(' ')[0]}</span>
-                    )}
-                    {tool.github && (
-                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-yellow-400 transition-colors">
-                        <ExternalLink size={8} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToolRunner
+            categoryLabel="Fuzzing — Real Execution"
+            color="yellow"
+            tools={[
+              { id: 'afl-fuzz', name: 'AFL++', github: 'AFLplusplus/AFLplusplus' },
+              { id: 'radamsa', name: 'Radamsa', github: 'aoh/radamsa' },
+            ]}
+          />
         </div>
 
         <div className="lg:col-span-3 bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col min-h-[550px] overflow-hidden shadow-2xl relative">
