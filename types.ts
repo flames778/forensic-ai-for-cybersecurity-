@@ -20,7 +20,9 @@ export type ModuleType =
   | 'fuzz' 
   | 'honeypot' 
   | 'stealth'
-  | 'surveillance';
+  | 'surveillance'
+  | 'threat'
+  | 'packet';
 
 export interface Message {
   id: string;
@@ -48,4 +50,42 @@ export interface ForensicsState {
   currentModule: ModuleType;
   messages: Message[];
   activeInvestigation: string | null;
+}
+
+export interface ThreatIndicator {
+  id: string;
+  type: 'ip' | 'domain' | 'hash' | 'url' | 'email';
+  value: string;
+  confidence: number;
+  source: string;
+  firstSeen: string;
+  lastSeen: string;
+  tags: string[];
+}
+
+export interface ThreatFeed {
+  id: string;
+  name: string;
+  status: 'active' | 'stale' | 'offline';
+  lastSync: string;
+  indicators: number;
+  sources: string[];
+}
+
+export interface PacketCapture {
+  id: string;
+  source: string;
+  destination: string;
+  protocol: string;
+  length: number;
+  info: string;
+  timestamp: string;
+}
+
+export interface ToolRunResult {
+  tool: string;
+  status: 'success' | 'error' | 'running';
+  output: string;
+  timestamp: string;
+  duration?: number;
 }

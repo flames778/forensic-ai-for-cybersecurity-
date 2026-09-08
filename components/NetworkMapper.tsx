@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
-import { Terminal, Download, Maximize2, RefreshCcw, Share2, ZoomIn } from 'lucide-react';
+import { Terminal, Download, Maximize2, RefreshCcw, Share2, ZoomIn, ExternalLink } from 'lucide-react';
 import { getNetworkInsights } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 
 const NetworkMapper: React.FC = () => {
   const [data, setData] = useState<{ nodes: any[], links: any[] }>({
@@ -82,17 +83,21 @@ const NetworkMapper: React.FC = () => {
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Legend</h3>
-            <div className="space-y-3">
-              {[
-                { label: 'Identity / Alias', color: '#3b82f6' },
-                { label: 'Network Node (IP)', color: '#10b981' },
-                { label: 'Web Asset (Domain)', color: '#f59e0b' },
-                { label: 'Cloud Infrastructure', color: '#ef4444' }
-              ].map(item => (
-                <div key={item.label} className="flex items-center gap-3 text-xs">
-                  <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: item.color, boxShadow: `0 0 10px ${item.color}40` }} />
-                  <span className="text-zinc-400 font-medium">{item.label}</span>
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Network Arsenal</h3>
+            <div className="space-y-2">
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'network')?.tools.slice(0, 6).map(tool => (
+                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono">
+                  <span className="text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    {tool.command && (
+                      <button className="text-[8px] text-zinc-700 hover:text-emerald-400 transition-colors">COPY</button>
+                    )}
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-emerald-400 transition-colors">
+                        <ExternalLink size={8} />
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

@@ -1,353 +1,218 @@
 
-import { GoogleGenAI, GenerateContentResponse, Type } from "@google/genai";
-import { SYSTEM_INSTRUCTION } from "../constants";
-
-const getAIClient = () => {
-  return new GoogleGenAI({ apiKey: process.env.API_KEY });
-};
+const BACKEND_URL = 'http://localhost:3005/api';
 
 export const chatWithForensix = async (
-  message: string, 
+  message: string,
   history: { role: 'user' | 'model', parts: { text: string }[] }[] = [],
   moduleContext?: string
 ) => {
-  const ai = getAIClient();
-  const contextPrefix = moduleContext ? `[OPERATIONAL CONTEXT: ${moduleContext}] ` : '';
-  
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: [
-      ...history,
-      { role: 'user', parts: [{ text: contextPrefix + message }] }
-    ],
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
-      tools: [{ googleSearch: {} }]
-    }
+  const response = await fetch(`${BACKEND_URL}/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, history, moduleContext })
   });
-
-  return {
-    text: response.text || "Evans, the neural link is lagging. I need a moment to re-sync with the mainframe.",
-    grounding: response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(chunk => ({
-      title: chunk.web?.title || 'Tactical Resource',
-      uri: chunk.web?.uri || ''
-    })) || []
-  };
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
 };
 
 export const accessRemoteCamera = async (target: string, method: string, description: string) => {
-  const ai = getAIClient();
-  
-  // Part 1: Technical Analysis & Exploit Simulation
-  const analysisPrompt = `
-    Evans is attempting to access a remote camera at ${target} using ${method}.
-    Description of the scene: ${description}
-    1. Simulate a tactical exploit log (e.g., bypass auth, RTSP stream hijack).
-    2. Provide a "Scene Summary" of what Forensix 'sees' in the feed.
-    3. Suggest tactical next steps for Evans.
-  `;
-  
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: analysisPrompt,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
+  const response = await fetch(`${BACKEND_URL}/access-remote-camera`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ target, method, description })
   });
-
-  // Part 2: Generate a "Surveillance Frame" using the image model
-  // This is a simulation using the image generation model to create a "CCTV" look.
-  const imageResponse = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: {
-      parts: [
-        { text: `A graining, low-quality security camera footage frame of ${description}. The image should have a digital overlay with 'REC' text, timestamp, scanlines, and high-contrast, greenish or grayscale night vision look.` }
-      ]
-    },
-    config: {
-      imageConfig: { aspectRatio: "16:9" }
-    }
-  });
-
-  let imageUrl = null;
-  for (const part of imageResponse.candidates[0].content.parts) {
-    if (part.inlineData) {
-      imageUrl = `data:image/png;base64,${part.inlineData.data}`;
-    }
-  }
-
-  return {
-    text: response.text,
-    imageUrl: imageUrl
-  };
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
 };
 
 export const simulatePentest = async (target: string, goal: string, toolset: any) => {
-  const ai = getAIClient();
-  const prompt = `
-    Evans is initiating a high-precision Pentest. 
-    Target: ${target}
-    Goal: ${goal}
-    Toolset: ${JSON.stringify(toolset)}
-    
-    If Metasploit is selected, simulate:
-    1. 'msfconsole' initialization.
-    2. 'use' of a specific relevant module (e.g., exploit/windows/smb/ms17_010_eternalblue).
-    3. Payload configuration and 'check' command.
-    4. Successful/Failed 'exploit' execution with session 1 opening.
-    5. Be technically precise with memory addresses and shellcode strings.
-  `;
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: prompt,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
+  const response = await fetch(`${BACKEND_URL}/simulate-pentest`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ target, goal, toolset })
   });
-  return response.text;
+  if (!response.ok) throw new Error('Backend link failed');
+  const data = await response.json();
+  return data.text;
 };
 
 export const scanVulnerabilities = async (target: string, config: any) => {
-  const ai = getAIClient();
-  const prompt = `
-    High-accuracy Vulnerability Scan on ${target}.
-    Config: ${JSON.stringify(config)}
-    
-    If Nmap NSE is used:
-    - Simulate 'nmap -sV --script ${config.nseCategory} ${target}' output.
-    - Detail open ports, service versions, and CVE links for found vulnerabilities.
-    
-    If Burp Suite is used:
-    - Simulate 'Intruder' or 'Repeater' requests.
-    - Show raw HTTP Headers, Cookies, and Body.
-    - Identify OWASP Top 10 flaws (SQLi, XSS, SSRF) with accurate payloads.
-  `;
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: prompt,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
+  const response = await fetch(`${BACKEND_URL}/scan-vulnerabilities`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ target, config })
   });
-  return response.text;
+  if (!response.ok) throw new Error('Backend link failed');
+  const data = await response.json();
+  return data.text;
 };
 
-export const performStealthAudit = async (ip: string, vpn: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Evans is auditing his stealth posture. IP: ${ip}, VPN Provider: ${vpn}. 
-    Analyze for: DNS Leaks, WebRTC vulnerabilities, Browser fingerprint uniqueness, and ISP tracking potential. Recommend hardening steps (Proxychains, Tor over VPN).`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
+// Generic investigator for all other tools
+const genericInvestigation = async (tool: string, params: any, prompt?: string) => {
+  const response = await fetch(`${BACKEND_URL}/perform-investigation`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tool, params, prompt })
   });
-  return response.text;
+  if (!response.ok) throw new Error('Backend link failed');
+  const data = await response.json();
+  return data.text;
 };
 
-export const scrubMetadata = async (fileType: string, filename: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Evans is scrubbing metadata from ${filename} (${fileType}). 
-    Describe the scrubbing process for EXIF, IPTC, XMP, and filesystem artifacts. Confirm 'ghosting' status of the file.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const performStealthAudit = (ip: string, vpn: string) =>
+  genericInvestigation('Stealth Audit', { ip, vpn }, `Evans is auditing his stealth posture. IP: ${ip}, VPN Provider: ${vpn}. Analyze for: DNS Leaks, WebRTC vulnerabilities, Browser fingerprint uniqueness, and ISP tracking potential.`);
 
-export const runFuzzingSession = async (target: string, protocol: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Evans is starting a high-precision fuzzing session. Target: ${target}, Protocol: ${protocol}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const scrubMetadata = (fileType: string, filename: string) =>
+  genericInvestigation('Metadata Scrubber', { fileType, filename }, `Evans is scrubbing metadata from ${filename} (${fileType}). Describe the scrubbing process.`);
 
-export const deployHoneypot = async (type: string, location: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Evans is deploying a honeypot. Type: ${type}, Location: ${location}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const runFuzzingSession = (target: string, protocol: string) =>
+  genericInvestigation('Fuzzer', { target, protocol }, `Evans is starting a high-precision fuzzing session. Target: ${target}, Protocol: ${protocol}.`);
 
-export const analyzeMemoryDump = async (dumpInfo: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Memory dump analysis for Evans: ${dumpInfo}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const deployHoneypot = (type: string, location: string) =>
+  genericInvestigation('Honeypot', { type, location }, `Evans is deploying a honeypot. Type: ${type}, Location: ${location}.`);
 
-export const performDiskImaging = async (source: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Disk imaging for Evans: ${source}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const analyzeMemoryDump = (dumpInfo: string) =>
+  genericInvestigation('Memory Analyzer', { dumpInfo }, `Memory dump analysis for Evans: ${dumpInfo}.`);
 
-export const auditCloudInfra = async (config: string, provider: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Cloud audit for Evans on ${provider}: ${config}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const performDiskImaging = (source: string) =>
+  genericInvestigation('Disk Imager', { source }, `Disk imaging for Evans: ${source}.`);
 
-export const detonateMalware = async (filename: string, fileInfo: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Malware detonation for Evans: ${filename}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const auditCloudInfra = (config: string, provider: string) =>
+  genericInvestigation('Cloud Auditor', { config, provider }, `Cloud audit for Evans on ${provider}: ${config}.`);
 
-export const generateTimeline = async (logs: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Forensic timeline for Evans: ${logs}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const detonateMalware = (filename: string, fileInfo: string) =>
+  genericInvestigation('Malware Sandbox', { filename, fileInfo }, `Malware detonation for Evans: ${filename}.`);
 
-export const simulateSocialEng = async (scenario: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Social Eng test for Evans: ${scenario}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const generateTimeline = (logs: string) =>
+  genericInvestigation('Timeline', { logs }, `Forensic timeline for Evans: ${logs}.`);
 
-export const simulatePasswordCrack = async (hash: string, method: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `Cracking hash for Evans: ${hash}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const simulateSocialEng = (scenario: string) =>
+  genericInvestigation('Social Eng Lab', { scenario }, `Social Eng test for Evans: ${scenario}.`);
 
-export const simulateReverseEng = async (code: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Reverse engineering for Evans: ${code}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const simulatePasswordCrack = (hash: string, method: string) =>
+  genericInvestigation('Password Cracker', { hash, method }, `Cracking hash for Evans: ${hash}.`);
 
-export const performDeviceForensics = async (target: string, type: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Device forensics for Evans: ${target}, Type: ${type}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const simulateReverseEng = (code: string) =>
+  genericInvestigation('Reverse Eng Lab', { code }, `Reverse engineering for Evans: ${code}.`);
+
+export const performDeviceForensics = (target: string, type: string) =>
+  genericInvestigation('Device Forensics', { target, type }, `Device forensics for Evans: ${target}, Type: ${type}.`);
 
 export const performOsintTrace = async (query: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `OSINT trace for Evans: ${query}.`,
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
-      tools: [{ googleSearch: {} }]
-    }
+  const response = await fetch(`${BACKEND_URL}/osint-trace`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query })
   });
-  return {
-    text: response.text,
-    grounding: response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(chunk => ({
-      title: chunk.web?.title || 'Tactical Resource',
-      uri: chunk.web?.uri || ''
-    })) || []
-  };
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
 };
 
-export const analyzeForensicLogs = async (logContent: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `Log analysis for Evans: ${logContent}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const analyzeForensicLogs = (logContent: string) =>
+  genericInvestigation('Log Analyzer', { logContent }, `Log analysis for Evans: ${logContent}.`);
 
-export const simulateWifiCrack = async (ssid: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `WiFi audit for Evans: ${ssid}.`,
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
-};
+export const simulateWifiCrack = (ssid: string) =>
+  genericInvestigation('Wifi Cracker', { ssid }, `WiFi audit for Evans: ${ssid}.`);
 
 export const analyzeForensicImage = async (base64Data: string, prompt: string) => {
-  const ai = getAIClient();
-  const imagePart = {
-    inlineData: { mimeType: 'image/jpeg', data: base64Data },
-  };
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: { parts: [imagePart, { text: `Evans needs image intel: ${prompt}` }] },
-    config: { systemInstruction: SYSTEM_INSTRUCTION }
-  });
-  return response.text;
+  return genericInvestigation('Image Intel', { base64Data, prompt }, `Evans needs image intel: ${prompt}. (Base64 data provided)`);
 };
 
 export const getNetworkInsights = async (rawLogs: string) => {
-  const ai = getAIClient();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `Evans needs a JSON mapping of this footprint data: ${rawLogs}.`,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          nodes: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                id: { type: Type.STRING },
-                label: { type: Type.STRING },
-                type: { type: Type.STRING }
-              },
-              required: ["id", "label", "type"]
-            }
-          },
-          links: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                source: { type: Type.STRING },
-                target: { type: Type.STRING },
-                label: { type: Type.STRING }
-              },
-              required: ["source", "target", "label"]
-            }
-          }
-        },
-        required: ["nodes", "links"]
-      }
-    }
+  const response = await fetch(`${BACKEND_URL}/get-network-insights`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rawLogs })
   });
-  return JSON.parse(response.text || '{"nodes":[], "links":[]}');
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+// Open Source Tools API
+export const getToolsList = async () => {
+  const response = await fetch(`${BACKEND_URL}/tools`);
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const searchTools = async (query: string) => {
+  const response = await fetch(`${BACKEND_URL}/tools/search?query=${encodeURIComponent(query)}`);
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const getToolsByCategory = async (categoryId: string) => {
+  const response = await fetch(`${BACKEND_URL}/tools/category/${categoryId}`);
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const runTool = async (tool: string, target?: string, params?: any) => {
+  const response = await fetch(`${BACKEND_URL}/tools/run`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tool, target, params })
+  });
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const threatIntelLookup = async (ioc: string, type?: string) => {
+  const response = await fetch(`${BACKEND_URL}/threat-intel`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ioc, type })
+  });
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const analyzePacketCapture = async (captureData: string, filter?: string) => {
+  const response = await fetch(`${BACKEND_URL}/packet-analysis`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ captureData, filter })
+  });
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const correlateVulnerabilities = async (cveIds: string, target: string) => {
+  const response = await fetch(`${BACKEND_URL}/vulnerability-correlation`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cveIds, target })
+  });
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const analyzeWithYara = async (sampleHash: string, rules?: string) => {
+  const response = await fetch(`${BACKEND_URL}/malware-yara`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sampleHash, rules })
+  });
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const analyzeWithVolatility = async (dumpPath: string, plugin?: string) => {
+  const response = await fetch(`${BACKEND_URL}/memory-volatility`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dumpPath, plugin })
+  });
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
+};
+
+export const analyzeWithSleuthKit = async (imagePath: string, command?: string) => {
+  const response = await fetch(`${BACKEND_URL}/disk-sleuthkit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imagePath, command })
+  });
+  if (!response.ok) throw new Error('Backend link failed');
+  return response.json();
 };

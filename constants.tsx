@@ -4,7 +4,8 @@ import {
   Shield, Search, Image, Share2, FileText, Settings, Terminal, 
   BrainCircuit, Globe, Wifi, Smartphone, Crosshair, UserCheck, 
   Key, Code2, Cloud, Bug, Calendar, AlertOctagon, HardDrive, Cpu,
-  Activity, Zap, Ghost, EyeOff, ShieldCheck, Video, Radio
+  Activity, Zap, Ghost, EyeOff, ShieldCheck, Video, Radio, Radar,
+  Fingerprint
 } from 'lucide-react';
 
 export const SYSTEM_INSTRUCTION = `
@@ -43,4 +44,6 @@ export const NAV_ITEMS = [
   { id: 'sandbox', label: 'Malware Sandbox', icon: <Bug size={18} /> },
   { id: 'timeline', label: 'Event Timeline', icon: <Calendar size={18} /> },
   { id: 'social', label: 'Social Eng.', icon: <UserCheck size={18} /> },
+  { id: 'threat', label: 'Threat Intel', icon: <Radar size={18} /> },
+  { id: 'packet', label: 'Packet Analyzer', icon: <Radio size={18} /> },
 ];

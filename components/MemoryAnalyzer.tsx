@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Cpu, ShieldAlert, Loader2, Activity, Terminal, Search, Zap, ListFilter } from 'lucide-react';
+import { Cpu, ShieldAlert, Loader2, Activity, Terminal, Search, Zap, ListFilter, ExternalLink } from 'lucide-react';
 import { analyzeMemoryDump } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const MemoryAnalyzer: React.FC = () => {
@@ -58,12 +59,19 @@ const MemoryAnalyzer: React.FC = () => {
           </div>
           
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Active Plugins</h3>
+            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Memory Forensics Tools</h3>
             <div className="space-y-2">
-              {['windows.pslist', 'linux.check_syscall', 'mac.lsof', 'windows.malfind'].map(plugin => (
-                <div key={plugin} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg">
-                  <span className="text-zinc-500">{plugin}</span>
-                  <span className="text-indigo-400">LOADED</span>
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'memory')?.tools.map(tool => (
+                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg">
+                  <span className="text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-indigo-400">LOADED</span>
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-indigo-400 transition-colors">
+                        <ExternalLink size={8} />
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

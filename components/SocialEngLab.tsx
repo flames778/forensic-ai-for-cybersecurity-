@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { UserCheck, ShieldAlert, Loader2, Brain, MessageCircle, AlertCircle, FileText, Send } from 'lucide-react';
+import { UserCheck, ShieldAlert, Loader2, Brain, MessageCircle, AlertCircle, FileText, Send, ExternalLink } from 'lucide-react';
 import { simulateSocialEng } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const SocialEngLab: React.FC = () => {
@@ -58,17 +59,19 @@ const SocialEngLab: React.FC = () => {
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Psychological Triggers</h3>
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Social Engineering Toolkit</h3>
             <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: 'Urgency', active: true },
-                { label: 'Authority', active: true },
-                { label: 'Fear', active: false },
-                { label: 'Curiosity', active: true },
-              ].map((trigger, i) => (
-                <div key={i} className={`p-3 rounded-xl border flex items-center gap-2 ${trigger.active ? 'bg-amber-600/10 border-amber-600/30 text-amber-400' : 'bg-zinc-800/20 border-zinc-800 text-zinc-600'}`}>
-                  {trigger.active ? <AlertCircle size={14} /> : <ShieldAlert size={14} />}
-                  <span className="text-xs font-bold uppercase">{trigger.label}</span>
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'social')?.tools.map(tool => (
+                <div key={tool.name} className={`p-3 rounded-xl border flex items-center gap-2 bg-amber-600/10 border-amber-600/30`}>
+                  <AlertCircle size={14} className="text-amber-400" />
+                  <div className="flex-1">
+                    <span className="text-[10px] font-bold text-amber-400 uppercase">{tool.name}</span>
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="ml-2 text-amber-600 hover:text-amber-300 transition-colors">
+                        <ExternalLink size={8} />
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

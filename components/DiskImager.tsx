@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { HardDrive, ShieldAlert, Loader2, Database, Hash, Archive, Terminal, Search } from 'lucide-react';
+import { HardDrive, ShieldAlert, Loader2, Database, Hash, Archive, Terminal, Search, ExternalLink } from 'lucide-react';
 import { performDiskImaging } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const DiskImager: React.FC = () => {
@@ -74,11 +75,23 @@ const DiskImager: React.FC = () => {
           </div>
           
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Sleuth Kit Buffer</h3>
-            <div className="space-y-2 text-[10px] font-mono text-zinc-500">
-               <p>$ fls -r -o 2048 /img/disk.raw</p>
-               <p>$ icat -o 2048 /img/disk.raw 14322</p>
-               <p className="text-zinc-700 mt-2">Ready for Sleuth Kit commands via Sub-Terminal...</p>
+            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Disk Forensics Toolkit</h3>
+            <div className="space-y-2">
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'disk')?.tools.map(tool => (
+                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
+                  <span className="text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    {tool.command && (
+                      <span className="text-zinc-700 text-[8px]">{tool.command.split(' ')[0]}</span>
+                    )}
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-emerald-400 transition-colors">
+                        <ExternalLink size={8} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

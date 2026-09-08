@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Wifi, ShieldAlert, Zap, Loader2, Signal, Terminal, Lock, Unlock } from 'lucide-react';
+import { Wifi, ShieldAlert, Zap, Loader2, Signal, Terminal, Lock, Unlock, ExternalLink } from 'lucide-react';
 import { simulateWifiCrack } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const WifiCracker: React.FC = () => {
@@ -69,19 +70,23 @@ const WifiCracker: React.FC = () => {
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Hardware Monitor</h3>
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">WiFi Attack Suite</h3>
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[10px] font-mono">
-                <span className="text-zinc-500">ADAPTER (wlan0)</span>
-                <span className="text-green-400">MONITOR MODE</span>
-              </div>
-              <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
-                <div className={`h-full bg-red-500 transition-all duration-1000 ${status === 'cracking' ? 'w-full' : status === 'scanning' ? 'w-1/3' : 'w-0'}`} />
-              </div>
-              <div className="flex items-center justify-between text-[10px] font-mono mt-2">
-                <span className="text-zinc-500">PACKET RATE</span>
-                <span className="text-red-400">{status === 'cracking' ? '2.4k p/s' : status === 'scanning' ? 'Scanning...' : '0.0 p/s'}</span>
-              </div>
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'wifi')?.tools.map(tool => (
+                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono">
+                  <span className="text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    {tool.command && (
+                      <button className="text-[8px] text-zinc-700 hover:text-red-400 transition-colors">COPY</button>
+                    )}
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-red-400 transition-colors">
+                        <ExternalLink size={8} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

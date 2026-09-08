@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Search, Globe, ShieldAlert, Cpu, Database, User, Mail, Activity, Loader2, ChevronRight, ExternalLink } from 'lucide-react';
 import { performOsintTrace } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const OsintToolkit: React.FC = () => {
@@ -90,18 +91,21 @@ const OsintToolkit: React.FC = () => {
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Live Threat Feed</h3>
-            <div className="space-y-3">
-              {[
-                { time: '12:04', msg: 'DNS Leak detected at 1.2.3.4', level: 'high' },
-                { time: '11:58', msg: 'Tor Node synchronized', level: 'info' },
-                { time: '11:42', msg: 'Scanning breach archives...', level: 'warn' },
-              ].map((log, i) => (
-                <div key={i} className="flex gap-3 text-[10px] font-mono">
-                  <span className="text-zinc-600">{log.time}</span>
-                  <span className={log.level === 'high' ? 'text-red-400' : log.level === 'warn' ? 'text-amber-400' : 'text-blue-400'}>
-                    [{log.level.toUpperCase()}] {log.msg}
-                  </span>
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">OSINT Arsenal</h3>
+            <div className="space-y-2">
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'osint')?.tools.map(tool => (
+                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
+                  <span className="text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    {tool.command && (
+                      <button className="text-[8px] text-zinc-700 hover:text-blue-400 transition-colors">COPY</button>
+                    )}
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-blue-400 transition-colors">
+                        <ExternalLink size={8} />
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

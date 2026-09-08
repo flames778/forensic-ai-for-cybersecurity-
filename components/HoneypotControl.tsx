@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Ghost, ShieldAlert, Loader2, Search, Target, Terminal, Activity, Zap, Server, Globe } from 'lucide-react';
+import { Ghost, ShieldAlert, Loader2, Search, Target, Terminal, Activity, Zap, Server, Globe, ExternalLink } from 'lucide-react';
 import { deployHoneypot } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const HoneypotControl: React.FC = () => {
@@ -75,16 +76,23 @@ const HoneypotControl: React.FC = () => {
           </div>
           
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Tactical Status</h3>
-            <div className="space-y-3 text-[10px] font-mono">
-              <div className="flex justify-between">
-                <span className="text-zinc-500">DECOYS UP</span>
-                <span className="text-purple-400">1</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">BITE RATE</span>
-                <span className="text-green-500">LOW</span>
-              </div>
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Honeypot Arsenal</h3>
+            <div className="space-y-2">
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'honeypot')?.tools.map(tool => (
+                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
+                  <span className="text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    {tool.command && (
+                      <span className="text-zinc-700 text-[8px]">{tool.command.split(' ')[0]}</span>
+                    )}
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-purple-400 transition-colors">
+                        <ExternalLink size={8} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

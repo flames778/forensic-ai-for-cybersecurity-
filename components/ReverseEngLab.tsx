@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Code2, ShieldAlert, Loader2, Cpu, Terminal, Binary, FileCode, CheckCircle2, Search } from 'lucide-react';
+import { Code2, ShieldAlert, Loader2, Cpu, Terminal, Binary, FileCode, CheckCircle2, Search, ExternalLink } from 'lucide-react';
 import { simulateReverseEng } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const ReverseEngLab: React.FC = () => {
@@ -106,16 +107,19 @@ const ReverseEngLab: React.FC = () => {
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Security Insights</h3>
-            <div className="space-y-3">
-              {[
-                { label: 'Obfuscation', status: 'MEDIUM', color: 'text-amber-400' },
-                { label: 'Payload Signature', status: 'CLEAN', color: 'text-green-400' },
-                { label: 'Logic Bombs', status: 'NONE DETECTED', color: 'text-zinc-500' },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between text-[10px] font-mono border-b border-zinc-800 pb-2">
-                  <span className="text-zinc-500 uppercase">{item.label}</span>
-                  <span className={item.color}>{item.status}</span>
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Reverse Engineering Toolkit</h3>
+            <div className="space-y-2">
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'reverse')?.tools.slice(0, 6).map(tool => (
+                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono border-b border-zinc-800 pb-2">
+                  <span className="text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-blue-400">LOADED</span>
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-blue-400 transition-colors">
+                        <ExternalLink size={10} />
+                      </a>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

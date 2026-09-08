@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Key, ShieldAlert, Loader2, Terminal, Lock, Unlock, Database, Activity, RefreshCw } from 'lucide-react';
+import { Key, ShieldAlert, Loader2, Terminal, Lock, Unlock, Database, Activity, RefreshCw, ExternalLink } from 'lucide-react';
 import { simulatePasswordCrack } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const PasswordCrackingRig: React.FC = () => {
@@ -81,15 +82,21 @@ const PasswordCrackingRig: React.FC = () => {
           </div>
 
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
-            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Cluster Health</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between text-[10px] font-mono">
-                <span className="text-zinc-500">GPU TEMPERATURE</span>
-                <span className={status === 'cracking' ? 'text-red-500' : 'text-green-500'}>{status === 'cracking' ? '82°C' : '34°C'}</span>
-              </div>
-              <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
-                <div className={`h-full bg-zinc-500 transition-all duration-[3000ms] ${status === 'cracking' ? 'w-4/5' : 'w-0'}`} />
-              </div>
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Cracking Arsenal</h3>
+            <div className="space-y-2">
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'password')?.tools.map(tool => (
+                <div key={tool.name} className="flex items-center justify-between text-[10px] font-mono p-2 bg-black/20 rounded-lg border border-zinc-800/50">
+                  <span className="text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-zinc-400">READY</span>
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-400 transition-colors">
+                        <ExternalLink size={8} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

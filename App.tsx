@@ -22,6 +22,8 @@ import FuzzingStation from './components/FuzzingStation';
 import HoneypotControl from './components/HoneypotControl';
 import StealthToolkit from './components/StealthToolkit';
 import SurveillanceOps from './components/SurveillanceOps';
+import ThreatIntel from './components/ThreatIntel';
+import PacketAnalyzer from './components/PacketAnalyzer';
 import { ModuleType } from './types';
 
 const App: React.FC = () => {
@@ -50,6 +52,8 @@ const App: React.FC = () => {
       case 'honeypot': return <HoneypotControl />;
       case 'stealth': return <StealthToolkit />;
       case 'surveillance': return <SurveillanceOps />;
+      case 'threat': return <ThreatIntel />;
+      case 'packet': return <PacketAnalyzer />;
       default: return <ChatInterface activeModule={activeModule} />;
     }
   };

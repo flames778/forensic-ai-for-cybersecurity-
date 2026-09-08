@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { FileText, AlertTriangle, FileSearch, CheckCircle2, Loader2, Upload, MessageSquare, ShieldCheck, BrainCircuit } from 'lucide-react';
+import { FileText, AlertTriangle, FileSearch, CheckCircle2, Loader2, Upload, MessageSquare, ShieldCheck, BrainCircuit, ExternalLink } from 'lucide-react';
 import { analyzeForensicLogs } from '../services/geminiService';
+import { OPEN_SOURCE_TOOLS } from '../lib/openSourceTools';
 import QuickReply from './QuickReply';
 
 const EvidenceAnalyzer: React.FC = () => {
@@ -80,21 +81,22 @@ const EvidenceAnalyzer: React.FC = () => {
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6">
             <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
               <ShieldCheck className="text-green-500" size={18} />
-              Forensix Scanner Stats
+              Intelligence Tools
             </h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-black/40 rounded-xl border border-zinc-800">
-                <span className="text-xs text-zinc-500">Keyword Flagging</span>
-                <span className="text-xs font-bold text-green-500">ACTIVE</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-black/40 rounded-xl border border-zinc-800">
-                <span className="text-xs text-zinc-500">Sentiment Detection</span>
-                <span className="text-xs font-bold text-blue-500">ENABLED</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-black/40 rounded-xl border border-zinc-800">
-                <span className="text-xs text-zinc-500">Anomaly Analysis</span>
-                <span className="text-xs font-bold text-indigo-500">ML V2.0</span>
-              </div>
+              {OPEN_SOURCE_TOOLS.find(c => c.id === 'threat')?.tools.slice(0, 4).map(tool => (
+                <div key={tool.name} className="flex items-center justify-between p-3 bg-black/40 rounded-xl border border-zinc-800">
+                  <span className="text-xs text-zinc-500">{tool.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-green-500">ACTIVE</span>
+                    {tool.github && (
+                      <a href={`https://github.com/${tool.github}`} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-green-400 transition-colors">
+                        <ExternalLink size={10} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
